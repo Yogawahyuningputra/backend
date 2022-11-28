@@ -1,0 +1,57 @@
+// func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
+// 	w.Header().Set("Content-Type", "application/json")
+
+// 	request := new(orderdto.OrderRequest)
+// 	if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 	}
+
+// 	validate := validator.New()
+// 	err := validate.Struct(request)
+// 	if err != nil {
+
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	transaction, err := h.OrderRepository.GetTransaction()
+
+// 	reqOrder := models.Order{
+// 		ProductID:     request.ProductID,
+// 		ToppingID:     request.ToppingID,
+// 		TransactionID: int(transaction.ID),
+// 		Subtotal:      request.Subtotal,
+// 		// Status:        request.Status,
+// 	}
+
+// 	validated := validator.New()
+// 	Err := validated.Struct(reqOrder)
+// 	if Err != nil {
+// 		w.WriteHeader(http.StatusBadRequest)
+// 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 		return
+// 	}
+
+// 	order := models.Order{
+// 		ProductID:     request.ProductID,
+// 		ToppingID:     request.ToppingID,
+// 		TransactionID: int(transaction.ID),
+// 		Subtotal:      request.Subtotal,
+// 		Status:        "on",
+// 	}
+// 	data, err := h.OrderRepository.CreateOrder(order)
+// 	if err != nil {
+// 		w.WriteHeader(http.StatusInternalServerError)
+// 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+// 		json.NewEncoder(w).Encode(response)
+// 	}
+
+// 	w.WriteHeader(http.StatusOK)
+// 	response := resultdto.SuccessResult{Code: http.StatusOK, Data: data}
+// 	json.NewEncoder(w).Encode(response)
+// }
