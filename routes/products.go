@@ -13,7 +13,7 @@ func ProductRoutes(r *mux.Router) {
 	ProductRepository := repositories.RepositoryProduct(mysql.DB)
 	h := handlers.HandlerProduct(ProductRepository)
 
-	r.HandleFunc("/products", middleware.Auth(h.FindProducts)).Methods("GET")
+	r.HandleFunc("/products", h.FindProducts).Methods("GET")
 	r.HandleFunc("/product/{id}", middleware.Auth(h.GetProduct)).Methods("GET")
 	r.HandleFunc("/product", middleware.Auth(middleware.UploadFile(h.CreateProduct))).Methods("POST")
 	r.HandleFunc("/product/{id}", middleware.Auth(middleware.UploadFile(h.UpdateProduct))).Methods("PATCH")

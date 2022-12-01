@@ -131,8 +131,6 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		Image: path_file + product.Image,
 	}
 
-	// product, _ = h.ProductRepository.GetProduct(product.ID)
-
 	w.WriteHeader(http.StatusOK)
 	response := resultdto.SuccessResult{Code: http.StatusOK, Data: ProductResponse}
 	json.NewEncoder(w).Encode(response)

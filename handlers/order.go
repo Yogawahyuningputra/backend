@@ -88,27 +88,27 @@ func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// topings, err := h.OrderRepository.GetToppingOrder(request.ToppingID)
+	toppings, err := h.OrderRepository.GetToppingOrder(request.ToppingID)
 
-	// if err != nil {
-	// 	w.WriteHeader(http.StatusBadRequest)
-	// 	response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Toping Not Found!"}
-	// 	json.NewEncoder(w).Encode(response)
-	// 	return
-	// }
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Topping Not Found!"}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
 
-	// var priceTopings = 0
-	// for _, i := range topings {
-	// 	priceTopings += i.Price
-	// }
-	// var Subtotal = request.Qty * (product.Price + priceTopings)
+	var priceTopings = 0
+	for _, i := range toppings {
+		priceTopings += i.Price
+	}
+	var Subtotal = request.Qty * (product.Price + priceTopings)
 
 	dataOrder := models.Order{
 		UserID:    UserID,
 		ProductID: product.ID,
-		ToppingID: request.ToppingID,
+		Topping:   toppings,
 		Qty:       request.Qty,
-		Price:     request.Subtotal,
+		Price:     Subtotal,
 	}
 
 	cart, err := h.OrderRepository.CreateOrder(dataOrder)

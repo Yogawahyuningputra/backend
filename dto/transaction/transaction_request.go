@@ -8,3 +8,7 @@ type Transaction struct {
 	Status   string `json:"status" form:"status"`
 	UserID   int    `json:"user_id" form:"user_id"`
 }
+
+type UpdateTransaction struct {
+	Status string `json:"status"`
+}

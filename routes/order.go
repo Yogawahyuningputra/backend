@@ -2,6 +2,7 @@ package routes
 
 import (
 	"backend/handlers"
+	"backend/pkg/middleware"
 	"backend/pkg/mysql"
 	"backend/repositories"
 
@@ -12,9 +13,9 @@ func OrderRoutes(r *mux.Router) {
 	OrderRepository := repositories.RepositoryOrder(mysql.DB)
 	h := handlers.HandlerOrder(OrderRepository)
 
-	r.HandleFunc("/orders", h.FindOrders).Methods("GET")
-	r.HandleFunc("/order/{id}", h.GetOrder).Methods("GET")
-	r.HandleFunc("/order/{id}", h.CreateOrder).Methods("POST")
-	r.HandleFunc("/order/{id}", h.DeleteOrder).Methods("DELETE")
+	r.HandleFunc("/orders", middleware.Auth(h.FindOrders)).Methods("GET")
+	r.HandleFunc("/order/{id}", middleware.Auth(h.GetOrder)).Methods("GET")
+	r.HandleFunc("/order/{id}", middleware.Auth(h.CreateOrder)).Methods("POST")
+	r.HandleFunc("/order/{id}", middleware.Auth(h.DeleteOrder)).Methods("DELETE")
 
 }

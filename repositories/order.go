@@ -21,13 +21,13 @@ func RepositoryOrder(db *gorm.DB) *repository {
 }
 func (r *repository) FindOrders() ([]models.Order, error) {
 	var order []models.Order
-	err := r.db.Find(&order).Error
+	err := r.db.Preload("Product").Preload("Topping").Preload("User").Where("user_id").Find(&order).Error
 
 	return order, err
 }
 func (r *repository) GetOrder(ID int) (models.Order, error) {
 	var order models.Order
-	err := r.db.First(&order).Error
+	err := r.db.Preload("Product").Preload("Topping").Preload("User").First(&order).Error
 
 	return order, err
 }
