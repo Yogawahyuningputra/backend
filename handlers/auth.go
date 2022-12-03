@@ -89,8 +89,8 @@ func (h *handlerAuth) Login(w http.ResponseWriter, r *http.Request) {
 		Password: request.Password,
 	}
 
-	fmt.Println("email", user.Email)
-	fmt.Println("password", user.Password)
+	// fmt.Println("email", user.Email)
+	// fmt.Println("password", user.Password)
 
 	user, err := h.AuthRepository.Login(user.Email)
 	fmt.Println("user", user)

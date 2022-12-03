@@ -5,10 +5,14 @@ import (
 	resultdto "backend/dto/result"
 	"backend/models"
 	"backend/repositories"
+	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/cloudinary/cloudinary-go/v2"
+	"github.com/cloudinary/cloudinary-go/v2/api/uploader"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt"
 	"github.com/gorilla/mux"
@@ -41,7 +45,7 @@ func (h *handlerProduct) FindProducts(w http.ResponseWriter, r *http.Request) {
 			ID:    s.ID,
 			Title: s.Title,
 			Price: s.Price,
-			Image: path_file + s.Image,
+			Image: s.Image,
 		}
 
 		ProductResponses = append(ProductResponses, ProductResponse)
@@ -68,7 +72,7 @@ func (h *handlerProduct) GetProduct(w http.ResponseWriter, r *http.Request) {
 		ID:    products.ID,
 		Title: products.Title,
 		Price: products.Price,
-		Image: path_file + products.Image,
+		Image: products.Image,
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -92,13 +96,13 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	//get data from middleware
 	dataContex := r.Context().Value("dataFile")
-	filename := dataContex.(string)
+	filepath := dataContex.(string)
 
 	price, _ := strconv.Atoi(r.FormValue("price"))
 	request := productdto.ProductRequest{
 		Title: r.FormValue("title"),
 		Price: price,
-		Image: filename,
+		Image: filepath,
 	}
 
 	validation := validator.New()
@@ -110,10 +114,28 @@ func (h *handlerProduct) CreateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var ctx = context.Background()
+	// var CLOUD_NAME = os.Getenv("CLOUD_NAME")
+	// var API_KEY = os.Getenv("API_KEY")
+	// var API_SECRET = os.Getenv("API_SECRET")
+
+	// Add your Cloudinary credentials ...
+	cld, _ := cloudinary.NewFromParams("doj9z1rop", "533982769458514", "Jdekzp9W3K0tT_xVUjR8BS0c5xA")
+	// cld, _ := cloudinary.NewFromParams(CLOUD_NAME, API_KEY, API_SECRET)
+
+	// Upload file to Cloudinary ...
+	resp, err := cld.Upload.Upload(ctx, filepath, uploader.UploadParams{Folder: "waysbucks/product"})
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
 	product := models.Product{
 		Title: request.Title,
 		Price: request.Price,
-		Image: filename,
+		Image: resp.SecureURL,
+		// UserID:      userId,
+
 	}
 
 	product, err = h.ProductRepository.CreateProduct(product)

@@ -7,17 +7,14 @@ type Order struct {
 	Qty       int             `json:"qty"`
 	Subtotal  int             `json:"subtotal" form:"subtotal" gorm:"type: int"`
 	ProductID int             `json:"product_id"`
-	Product   ProductResponse `json:"product"`
+	Product   ProductResponse `json:"product" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	// ToppingID []int           `json:"topping_id" form:"topping_id" gorm:"-"`
-	Topping []Topping    `json:"toppings" gorm:"many2many:order_toppings"`
-	UserID  int          `json:"user_id"`
-	User    UserResponse `json:"user"`
-	Price   int          `json:"price" gorm:"type:int"`
-	// TransactionID int                 `json:"transaction_id"`
-	// Transaction   TransactionResponse `json:"transaction"`
-	// Status    string    `json:"status"`
-	CreatedAt time.Time `json:"-"`
-	UpdatedAt time.Time `json:"-"`
+	Topping   []Topping    `json:"toppings" gorm:"many2many:order_toppings; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserID    int          `json:"user_id"`
+	User      UserResponse `json:"user"`
+	Price     int          `json:"price" gorm:"type:int"`
+	CreatedAt time.Time    `json:"-"`
+	UpdatedAt time.Time    `json:"-"`
 }
 
 type OrderResponse struct {
@@ -25,13 +22,11 @@ type OrderResponse struct {
 	ProductID int             `json:"product_id"`
 	Product   ProductResponse `json:"product"`
 	ToppingID []int           `json:"topping_id" form:"topping_id" gorm:"-"`
-	Topping   []Topping       `json:"toppings" gorm:"many2many:order_toppings"`
+	Topping   []Topping       `json:"toppings" gorm:"many2many:order_toppings; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	UserID    int             `json:"user_id"`
 	Price     int             `json:"price" gorm:"type:int"`
-	// TransactionID int                 `json:"transaction_id"`
-	// Transaction   TransactionResponse `json:"transaction" gorm:"foreignKey:TransactionID"`
-	Qty      int `json:"qty"`
-	Subtotal int `json:"subtotal"`
+	Qty       int             `json:"qty"`
+	Subtotal  int             `json:"subtotal"`
 }
 
 func (OrderResponse) TableName() string {

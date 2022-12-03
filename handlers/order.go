@@ -76,7 +76,7 @@ func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
-	UserID := int(userInfo["id"].(float64))
+	userID := int(userInfo["id"].(float64))
 
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 	product, err := h.OrderRepository.GetProductOrder(id)
@@ -101,14 +101,14 @@ func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	for _, i := range toppings {
 		priceTopings += i.Price
 	}
-	var Subtotal = request.Qty * (product.Price + priceTopings)
+	var subTotal = request.Qty * (product.Price + priceTopings)
 
 	dataOrder := models.Order{
-		UserID:    UserID,
+		UserID:    userID,
 		ProductID: product.ID,
 		Topping:   toppings,
 		Qty:       request.Qty,
-		Price:     Subtotal,
+		Price:     subTotal,
 	}
 
 	cart, err := h.OrderRepository.CreateOrder(dataOrder)
@@ -148,6 +148,16 @@ func (h *handlerOrder) DeleteOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	response := resultdto.SuccessResult{Code: http.StatusOK, Data: data}
+	response := resultdto.SuccessResult{Code: http.StatusOK, Data: convertResponseOrder(data)}
 	json.NewEncoder(w).Encode(response)
+}
+
+func convertResponseOrder(u models.Order) models.Order {
+	return models.Order{
+		ID:       u.ID,
+		Qty:      u.Qty,
+		Subtotal: u.Subtotal,
+		Product:  u.Product,
+		Topping:  u.Topping,
+	}
 }
