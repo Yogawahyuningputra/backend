@@ -150,7 +150,7 @@ func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		ProductID:     product.ID,
 		Topping:       toppings,
 		Qty:           request.Qty,
-		Price:         subTotal,
+		Subtotal:      subTotal,
 		TransactionID: transID,
 	}
 

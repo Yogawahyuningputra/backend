@@ -35,7 +35,7 @@ func (r *repository) FindTransactions(ID int) ([]models.Transaction, error) {
 
 func (r *repository) FindTransactionID(ID int) ([]models.Transaction, error) {
 	var transaction []models.Transaction
-	err := r.db.Preload("User").Preload(clause.Associations).Preload("Order.Product").Preload("Order.Topping").Where("status != ? AND account_id = ?", "waiting", ID).Find(&transaction).Error
+	err := r.db.Preload("User").Preload(clause.Associations).Preload("Order.Product").Preload("Order.Topping").Where("status != ? AND user_id = ?", "waiting", ID).Find(&transaction).Error
 
 	return transaction, err
 }

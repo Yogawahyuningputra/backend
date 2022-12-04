@@ -9,10 +9,11 @@ type OrderRequest struct {
 	Qty      int `json:"qty" form:"qty"`
 }
 type OrderResponse struct {
-	ID        int    `json:"id"`
-	UserID    int    `json:"user_id"`
-	ProductID int    `json:"product_id" form:"product" validate:"required"`
-	ToppingID []int  `json:"topping_id" form:"topping" validate:"required"`
-	Subtotal  int    `json:"subtotal" form:"Subtotal" validate:"required"`
-	Status    string `json:"status"`
+	// ID        int    `json:"id"`
+	// UserID    int    `json:"user_id"`
+	// ProductID int    `json:"product_id" form:"product" validate:"required"`
+	// ToppingID []int  `json:"topping_id" form:"topping" validate:"required"`
+	// Subtotal  int    `json:"subtotal" form:"Subtotal" validate:"required"`
+	// Status    string `json:"status"`
+	Qty int `json:"qty" form:"qty"`
 }
