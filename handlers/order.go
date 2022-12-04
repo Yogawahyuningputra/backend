@@ -6,6 +6,7 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -43,6 +44,27 @@ func (h *handlerOrder) GetOrder(w http.ResponseWriter, r *http.Request) {
 	id, _ := strconv.Atoi(mux.Vars(r)["id"])
 
 	cart, err := h.OrderRepository.GetOrder(id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
+		json.NewEncoder(w).Encode(response)
+	}
+
+	w.WriteHeader(http.StatusOK)
+	response := resultdto.SuccessResult{Code: http.StatusOK, Data: (cart)}
+	json.NewEncoder(w).Encode(response)
+}
+func (h *handlerOrder) GetOrderById(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	// id, _ := strconv.Atoi(mux.Vars(r)["id"])
+	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
+	userID := int64(userInfo["id"].(float64))
+
+	transaction, _ := h.OrderRepository.GetTransactionID(int(userID))
+
+	cart, err := h.OrderRepository.GetOrderById(int(transaction.ID))
+
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: err.Error()}
@@ -103,15 +125,42 @@ func (h *handlerOrder) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 	var subTotal = request.Qty * (product.Price + priceTopings)
 
+	CekRequestTrans, _ := h.OrderRepository.GetTransactionID(userID)
+
+	var transID int
+	if CekRequestTrans.ID != 0 {
+		transID = CekRequestTrans.ID
+	} else {
+		requestTrans := models.Transaction{
+			Name:     "-",
+			Email:    "-",
+			Phone:    "-",
+			Poscode:  "-",
+			Address:  "-",
+			Status:   "Waiting",
+			Subtotal: 0,
+			UserID:   userID,
+		}
+		transOrder, _ := h.OrderRepository.RequestTransaction(requestTrans)
+		transID = transOrder.ID
+	}
+	// fmt.Println("cek = ", transID)
 	dataOrder := models.Order{
-		UserID:    userID,
-		ProductID: product.ID,
-		Topping:   toppings,
-		Qty:       request.Qty,
-		Price:     subTotal,
+		UserID:        userID,
+		ProductID:     product.ID,
+		Topping:       toppings,
+		Qty:           request.Qty,
+		Price:         subTotal,
+		TransactionID: transID,
 	}
 
 	cart, err := h.OrderRepository.CreateOrder(dataOrder)
+
+	fmt.Println("Cart = ", cart.Qty)
+	fmt.Println("Subtotal = ", cart.Subtotal)
+	fmt.Println("TransactionID = ", cart.TransactionID)
+	fmt.Println("ProductID = ", cart.ProductID)
+	fmt.Println("Topping = ", cart.Topping)
 
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -9,12 +9,14 @@ type Order struct {
 	ProductID int             `json:"product_id"`
 	Product   ProductResponse `json:"product" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	// ToppingID []int           `json:"topping_id" form:"topping_id" gorm:"-"`
-	Topping   []Topping    `json:"toppings" gorm:"many2many:order_toppings; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	UserID    int          `json:"user_id"`
-	User      UserResponse `json:"user"`
-	Price     int          `json:"price" gorm:"type:int"`
-	CreatedAt time.Time    `json:"-"`
-	UpdatedAt time.Time    `json:"-"`
+	Topping       []Topping           `json:"toppings" gorm:"many2many:order_toppings; constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	UserID        int                 `json:"user_id"`
+	User          UserResponse        `json:"user"`
+	TransactionID int                 `json:"transaction_id"`
+	Transaction   TransactionResponse `json:"transaction" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	Price         int                 `json:"price" gorm:"type:int"`
+	CreatedAt     time.Time           `json:"-"`
+	UpdatedAt     time.Time           `json:"-"`
 }
 
 type OrderResponse struct {

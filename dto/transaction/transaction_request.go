@@ -2,6 +2,9 @@ package transactiondto
 
 type Transaction struct {
 	Name     string `json:"name" form:"name"`
+	Email    string `json:"email" form:"email"`
+	Phone    string `json:"phone" form:"phone"`
+	Poscode  string `json:"poscode" form:"poscode"`
 	Address  string `json:"address" form:"address"`
 	OrderID  []int  `json:"order_id" form:"order_id"`
 	Subtotal string `json:"subtotal" form:"subtotal"`
@@ -10,5 +13,10 @@ type Transaction struct {
 }
 
 type UpdateTransaction struct {
-	Status string `json:"status"`
+	Name    string `json:"name" form:"name"`
+	Email   string `json:"email" form:"email"`
+	Phone   string `json:"phone" form:"phone"`
+	Poscode string `json:"poscode" form:"poscode"`
+	Address string `json:"address" form:"address"`
+	// Status string `json:"status"`
 }
