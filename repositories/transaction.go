@@ -12,7 +12,7 @@ type TransactionRepository interface {
 	FindTransactions(ID int) ([]models.Transaction, error)
 	FindTransactionID(ID int) ([]models.Transaction, error)
 	GetTransaction(ID int) (models.Transaction, error)
-	GetOrderByUser(ID int) ([]models.Order, error)
+	GetOrderByTrans(ID int) ([]models.Order, error)
 	GetOrderByID() ([]models.Transaction, error)
 	UpdateTransaction(transaction models.Transaction) (models.Transaction, error)
 	CancelTransaction(transaction models.Transaction) (models.Transaction, error)
@@ -42,13 +42,13 @@ func (r *repository) FindTransactionID(ID int) ([]models.Transaction, error) {
 
 func (r *repository) GetTransaction(ID int) (models.Transaction, error) {
 	var transaction models.Transaction
-	err := r.db.Preload("Order").Preload("User").First(&transaction, ID).Error
+	err := r.db.Preload("Order.Product").Preload("Order.Topping").Preload("User").First(&transaction, ID).Error
 	return transaction, err
 }
 
-func (r *repository) GetOrderByUser(ID int) ([]models.Order, error) {
+func (r *repository) GetOrderByTrans(ID int) ([]models.Order, error) {
 	var order []models.Order
-	err := r.db.Preload("Product").Preload("Topping").Preload("User").Where("user_id =?", ID).Find(&order).Error
+	err := r.db.Preload("Product").Preload("Topping").Preload("User").Where("transaction_id =?", ID).Find(&order).Error
 
 	return order, err
 }

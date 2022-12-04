@@ -6,6 +6,7 @@ import (
 	"backend/models"
 	"backend/repositories"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -59,7 +60,7 @@ func (h *handlerTransaction) AddTransaction(w http.ResponseWriter, r *http.Reque
 	userInfo := r.Context().Value("userInfo").(jwt.MapClaims)
 	userID := int(userInfo["id"].(float64))
 
-	userCart, _ := h.TransactionRepository.GetOrderByUser(userID)
+	userCart, _ := h.TransactionRepository.GetOrderByTrans(userID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Purchased Failed"}
@@ -134,10 +135,7 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	// if request.Status != "" {
-	// 	transaction.Status = request.Status
-	// }
-	orderTrans, err := h.TransactionRepository.GetOrderByUser(int(id))
+	orderTrans, err := h.TransactionRepository.GetOrderByTrans(transaction.ID)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Failed"}
@@ -145,14 +143,14 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 		return
 	}
 
-	var Total = 0
+	var Total int
 	for _, i := range orderTrans {
 		Total += i.Subtotal
+		// fmt.Println(i.Subtotal)
 	}
 
-	// fmt.Println(orderTrans)
-	// fmt.Println(transaction.ID)
-	// fmt.Println(Total)
+	fmt.Println(transaction.ID)
+	fmt.Println(Total)
 
 	if request.Name != "" {
 		transaction.Name = request.Name
@@ -172,6 +170,8 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 	transaction.Status = "Payment"
 	transaction.Subtotal = Total
 
+	fmt.Println(transaction)
+
 	data, err := h.TransactionRepository.UpdateTransaction(transaction)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -181,26 +181,29 @@ func (h *handlerTransaction) UpdateTransaction(w http.ResponseWriter, r *http.Re
 	}
 
 	trans, _ := h.TransactionRepository.GetTransaction(data.ID)
-	orderUser, err := h.TransactionRepository.GetOrderByUser(data.UserID)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Failed"}
-		json.NewEncoder(w).Encode(response)
-		return
-	}
-	dataUpdate := models.Transaction{
-		ID:       trans.ID,
-		Name:     trans.Name,
-		Address:  trans.Address,
-		Status:   trans.Status,
-		Order:    orderUser,
-		Subtotal: trans.Subtotal,
-		UserID:   trans.UserID,
-		User:     trans.User,
-	}
+	// orderUser, err := h.TransactionRepository.GetOrderByTrans(trans.ID)
+	// if err != nil {
+	// 	w.WriteHeader(http.StatusBadRequest)
+	// 	response := resultdto.ErrorResult{Code: http.StatusBadRequest, Message: "Failed"}
+	// 	json.NewEncoder(w).Encode(response)
+	// 	return
+	// }
+
+	// fmt.Println(data)
+
+	// dataUpdate := models.Transaction{
+	// 	ID:       trans.ID,
+	// 	Name:     trans.Name,
+	// 	Address:  trans.Address,
+	// 	Status:   trans.Status,
+	// 	Order:    orderUser,
+	// 	Subtotal: trans.Subtotal,
+	// 	UserID:   trans.UserID,
+	// 	User:     trans.User,
+	// }
 
 	w.WriteHeader(http.StatusOK)
-	response := resultdto.SuccessResult{Code: http.StatusOK, Data: dataUpdate}
+	response := resultdto.SuccessResult{Code: http.StatusOK, Data: trans}
 	json.NewEncoder(w).Encode(response)
 }
 
